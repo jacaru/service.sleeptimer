@@ -58,7 +58,7 @@ def _log( message, level ):
     xbmc.log(addon_id + ": " + str(message), level=level)
 
 def debug( message ):
-    if isDebug == 'true':
+    if debug_enable == 'true':
         _log(message, xbmc.LOGDEBUG)
 
 def info( message ):
