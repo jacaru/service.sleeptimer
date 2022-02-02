@@ -163,8 +163,6 @@ class service:
                     iCheckTime = check_time
                     do_next_check(iCheckTime)
                     continue
-                
-                idle_time_in_minutes = int(idle_time)/60
 
                 if xbmc.Player().isPlaying():
 
@@ -233,8 +231,7 @@ class service:
                                 break
                         if cancelled == True:
                             iCheckTime = check_time_next
-                            idle_time_since_cancelled += idle_time_in_minutes
-                            idle_time_in_minutes = 0
+                            idle_time_since_cancelled += idle_time
                             info ( "Progressdialog cancelled, next check in " + str(iCheckTime) + " min" )
                             # set next_check, so that it opens the dialog after "iCheckTime"
                             msgdialogprogress.close()
@@ -282,7 +279,7 @@ class service:
                         debug ( "Playing the stream, time does not exceed max limit" )
                         debug ( "what_is_playing: " + str(what_is_playing) )
                         debug ( "max_time_in_minutes: " + str(max_time_in_minutes) )
-                        debug ( "idle_time: '" + str(idle_tim) + "'" )
+                        debug ( "idle_time: '" + str(idle_time) + "'" )
                         debug ( "idle_time_since_cancelled: '" + str(idle_time_since_cancelled) + "m" )
                         debug ( "total_idle_time: '" + str(total_idle_time) + "m" )
                 else:
