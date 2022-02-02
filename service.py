@@ -54,17 +54,15 @@ cmd = selfAddon.getSetting('cmd')
 def translate(text):
     return selfAddon.getLocalizedString(text).encode('utf-8')
 
-def _log( message, isDebug ):
-    if isDebug == 'true':
-        xbmc.log(addon_id + ": " + str(message), level=xbmc.LOGDEBUG)
-    else:
-        xbmc.log(addon_id + ": " + str(message), level=xbmc.LOGINFO)
+def _log( message, level ):
+    xbmc.log(addon_id + ": " + str(message), level=level)
 
 def debug( message ):
-    _log(message, debug_enable)
+    if isDebug == 'true':
+        _log(message, xbmc.LOGDEBUG)
 
 def info( message ):
-    _log(message, '')
+    _log(message, xbmc.LOGINFO)
 
 # print the actual playing file in DEBUG-mode
 def print_act_playing_file():
