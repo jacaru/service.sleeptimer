@@ -64,7 +64,7 @@ def debug( message ):
     _log(message, debug_enable)
 
 def info( message ):
-    _log(message, False)
+    _log(message, '')
 
 # print the actual playing file in DEBUG-mode
 def print_act_playing_file():
