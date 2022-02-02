@@ -72,7 +72,7 @@ def print_act_playing_file():
 # wait for abort - xbmc.sleep or time.sleep doesn't work
 # and prevents Kodi from exiting
 def do_next_check( iTimeToWait ):
-    debug ( "DEBUG: next check in " + str(iTimeToWait) + " min" )
+    debug ( "next check in " + str(iTimeToWait) + " min" )
     if xbmc.Monitor().waitForAbort(int(iTimeToWait)*60):
         exit()
 
@@ -150,10 +150,20 @@ class service:
                         break
 
                     max_time_in_minutes = -1
+                    idle_time = 0
                     idle_time_since_cancelled = 0
                     FirstCycle = False
 
-                idle_time = xbmc.getGlobalIdleTime()
+                previous_idle_time = idle_time
+                idle_time = int(xbmc.getGlobalIdleTime())/60
+                
+                if previous_idle_time >= idle_time:
+                    debug ("additional interactions detected, previous cancellations ignored")
+                    idle_time_since_cancelled = 0
+                    iCheckTime = check_time
+                    do_next_check(iCheckTime)
+                    continue
+                
                 idle_time_in_minutes = int(idle_time)/60
 
                 if xbmc.Player().isPlaying():
@@ -193,15 +203,15 @@ class service:
                     # only display the Progressdialog, if audio or video is enabled AND idle limit is reached
 
                     # Check if what_is_playing is not "other" and idle time exceeds limit
-                    total_idle_time = idle_time_in_minutes + idle_time_since_cancelled
+                    total_idle_time = idle_time + idle_time_since_cancelled
                     if ( what_is_playing != "other" and total_idle_time >= max_time_in_minutes ):
 
                         info ( "idle_time exceeds max allowed. Display Progressdialog" )
                         info ( "what_is_playing: " + str(what_is_playing) )
-                        info ( "idle_time: '" + str(idle_time) + "s'; idle_time_in_minutes: '" + str(idle_time_in_minutes) + "'" )
+                        info ( "max_time_in_minutes: " + str(max_time_in_minutes) )
+                        info ( "idle_time: '" + str(idle_time) + "'" )
                         info ( "idle_time_since_cancelled: '" + str(idle_time_since_cancelled) + "m" )
                         info ( "total_idle_time: '" + str(total_idle_time) + "m" )
-                        info ( "max_time_in_minutes: " + str(max_time_in_minutes) )
 
                         ret = msgdialogprogress.create(translate(30000),translate(30001))
                         secs=0
@@ -224,14 +234,13 @@ class service:
                         if cancelled == True:
                             iCheckTime = check_time_next
                             idle_time_since_cancelled += idle_time_in_minutes
+                            idle_time_in_minutes = 0
                             info ( "Progressdialog cancelled, next check in " + str(iCheckTime) + " min" )
                             # set next_check, so that it opens the dialog after "iCheckTime"
-                            next_check = True
                             msgdialogprogress.close()
                         else:
                             info ( "Progressdialog not cancelled: stopping Player" )
                             msgdialogprogress.close()
-                            next_check = False
                             iCheckTime = check_time
                             idle_time_since_cancelled=0
 
@@ -272,10 +281,10 @@ class service:
                     else:
                         debug ( "Playing the stream, time does not exceed max limit" )
                         debug ( "what_is_playing: " + str(what_is_playing) )
-                        debug ( "idle_time: '" + str(idle_time) + "s'; idle_time_in_minutes: '" + str(idle_time_in_minutes) + "'" )
+                        debug ( "max_time_in_minutes: " + str(max_time_in_minutes) )
+                        debug ( "idle_time: '" + str(idle_tim) + "'" )
                         debug ( "idle_time_since_cancelled: '" + str(idle_time_since_cancelled) + "m" )
                         debug ( "total_idle_time: '" + str(total_idle_time) + "m" )
-                        debug ( "max_time_in_minutes: " + str(max_time_in_minutes) )
                 else:
                     debug ( "Not playing any media file" )
                     # reset max_time_in_minutes
